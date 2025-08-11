@@ -3,7 +3,7 @@ package CLI
 class Enrollment {
 
     Date enrollmentDate = new Date()
-    Double grade
+    Double grade  //  علامة الطالب
 
     static belongsTo = [student: Student, course: Course]
 
@@ -11,7 +11,7 @@ class Enrollment {
         student nullable: false
         course nullable: false
         enrollmentDate nullable: false
-        grade nullable: true, min: 0.0d, max: 4.0d
+        grade nullable: true, min: 0.0d, max: 4.0d  // GPA عادة من 0 إلى 4
     }
 
     String toString() {

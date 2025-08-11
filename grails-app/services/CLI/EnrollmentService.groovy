@@ -12,22 +12,32 @@ class EnrollmentService {
     /**
      * تسجيل طالب في كورس بعد التحقق من عدم التكرار
      */
-    def save(Enrollment enrollment) {
+    @Transactional
+    Enrollment save(Enrollment enrollment) {
         if (!enrollment) {
             log.error("❌ [save] Enrollment object is null")
             throw new RuntimeException("Enrollment object is null")
         }
 
-        log.info("🔍 [save] Checking enrollment for student ${enrollment.student?.id} in course ${enrollment.course?.id}")
+        if (!enrollment.student || !enrollment.course) {
+            log.error("❌ [save] Student or Course is null")
+            throw new RuntimeException("Student or Course must be specified")
+        }
 
-        def existing = Enrollment.findByStudentAndCourse(enrollment.student, enrollment.course)
+        log.info("🔍 [save] Checking enrollment for student ${enrollment.student.id} in course ${enrollment.course.id}")
+
+        def existing = Enrollment.createCriteria().get {
+            eq('student', enrollment.student)
+            eq('course', enrollment.course)
+        }
+
         if (existing) {
-            log.warn("⚠️ [save] Duplicate enrollment for student ${enrollment.student?.id}")
+            log.warn("⚠️ [save] Duplicate enrollment for student ${enrollment.student.id}")
             throw new RuntimeException("Student is already enrolled in this course.")
         }
 
-        log.info("✅ [save] Saving enrollment for student ${enrollment.student?.id} in course ${enrollment.course?.id}")
-        enrollmentRepository.save(enrollment)
+        log.info("✅ [save] Saving enrollment for student ${enrollment.student.id} in course ${enrollment.course.id}")
+        return enrollmentRepository.save(enrollment)
     }
 
     /**

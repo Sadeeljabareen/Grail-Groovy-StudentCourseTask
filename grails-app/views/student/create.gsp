@@ -1,48 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="main" />
-    <g:set var="entityName" value="${message(code: 'student.label', default: 'Student')}" />
-    <title><g:message code="default.create.label" args="[entityName]" /></title>
+    <meta name="layout" content="main"/>
+    <title>Create Student</title>
+    <asset:stylesheet src="application.css"/>
+    <asset:javascript src="application.js"/>
+    <script>
+        $(document).ready(function() {
+            // التحقق من حجم الملف
+            $('input[type="file"]').change(function() {
+                if (this.files[0] && this.files[0].size > 2000000) {
+                    alert('File size must be less than 2MB');
+                    $(this).val('');
+                }
+            });
+
+            // التحقق من البريد الإلكتروني فورياً
+            $('#email').blur(function() {
+                const email = $(this).val();
+                if (email) {
+                    $.get("${createLink(controller:'student', action:'checkEmail')}", {email: email}, function(data) {
+                        if (data.exists) {
+                            $('#emailError').text('Email already exists').show();
+                        } else {
+                            $('#emailError').hide();
+                        }
+                    });
+                }
+            });
+
+            // التحقق من اسم المستخدم فورياً
+            $('#username').blur(function() {
+                const username = $(this).val();
+                if (username) {
+                    $.get("${createLink(controller:'student', action:'checkUsername')}", {username: username}, function(data) {
+                        if (data.exists) {
+                            $('#usernameError').text('Username already exists').show();
+                        } else {
+                            $('#usernameError').hide();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 </head>
 <body>
-<a href="#create-student" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-<div class="nav" role="navigation">
-    <ul>
-        <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-        <li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-    </ul>
-</div>
-<div id="create-student" class="content scaffold-create" role="main">
-    <h1><g:message code="default.create.label" args="[entityName]" /></h1>
+<div class="container">
+    <h1>Create Student</h1>
+
     <g:if test="${flash.message}">
-        <div class="message" role="status">${flash.message}</div>
+        <div class="alert alert-info">${flash.message}</div>
     </g:if>
-    <g:hasErrors bean="${this.student}">
-        <ul class="errors" role="alert">
-            <g:eachError bean="${this.student}" var="error">
-                <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-            </g:eachError>
-        </ul>
+
+    <g:if test="${flash.error}">
+        <div class="alert alert-danger">${flash.error}</div>
+    </g:if>
+
+    <g:hasErrors bean="${student}">
+        <div class="alert alert-danger">
+            <ul>
+                <g:eachError bean="${student}" var="error">
+                    <li><g:message error="${error}"/></li>
+                </g:eachError>
+            </ul>
+        </div>
     </g:hasErrors>
-    <g:form resource="${this.student}" method="POST">
-        <fieldset class="form">
-            <!-- استبدل <f:all bean="student"/> بحقول مخصصة لتجنب إدراج Enrollment -->
-            <div class="fieldcontain">
-                <label for="name">Name <span class="required-indicator">*</span></label>
-                <g:textField name="name" value="${student?.name}" required="true"/>
-                <g:fieldError bean="${this.student}" field="name"/>
-            </div>
-            <div class="fieldcontain">
-                <label for="email">Email <span class="required-indicator">*</span></label>
-                <g:textField name="email" value="${student?.email}" required="true"/>
-                <g:fieldError bean="${this.student}" field="email"/>
-            </div>
-        </fieldset>
-        <fieldset class="buttons">
-            <g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />
-        </fieldset>
-    </g:form>
+
+    <g:uploadForm action="save">
+        <div class="form-group">
+            <label>Full Name*</label>
+            <g:textField name="name" value="${student?.name}" class="form-control" required=""/>
+        </div>
+
+        <div class="form-group">
+            <label>Email*</label>
+            <g:field type="email" name="email" id="email" value="${student?.email}" class="form-control" required=""/>
+            <small id="emailError" class="text-danger" style="display:none;"></small>
+        </div>
+
+        <div class="form-group">
+            <label>Username*</label>
+            <g:textField name="username" id="username" value="${user?.username}" class="form-control" required=""/>
+            <small id="usernameError" class="text-danger" style="display:none;"></small>
+        </div>
+
+        <div class="form-group">
+            <label>Password*</label>
+            <g:passwordField name="password" class="form-control" required=""/>
+            <small class="text-muted">Minimum 6 characters</small>
+        </div>
+
+        <div class="form-group">
+            <label>Profile Photo</label>
+            <input type="file" name="photo" class="form-control" accept="image/*"/>
+            <small class="text-muted">Max size: 2MB (JPEG, PNG)</small>
+        </div>
+
+        <div class="form-group">
+            <g:submitButton name="create" class="btn btn-primary" value="Create"/>
+            <g:link class="btn btn-default" action="index">Cancel</g:link>
+        </div>
+    </g:uploadForm>
 </div>
 </body>
 </html>

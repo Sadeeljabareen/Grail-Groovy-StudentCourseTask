@@ -1,8 +1,11 @@
 package CLI
 
+import grails.gorm.transactions.Transactional
+import grails.rest.Resource
 import static org.springframework.http.HttpStatus.*
 import groovy.util.logging.Slf4j
 
+@Resource()
 @Slf4j
 class EnrollmentController {
 
@@ -12,55 +15,74 @@ class EnrollmentController {
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        respond enrollmentService.list(params), model: [enrollmentCount: enrollmentService.count()]
+        def criteria = Enrollment.createCriteria()
+        def enrollments = criteria.list(params) {
+            if (params.studentId) {
+                eq('student.id', params.long('studentId'))
+            }
+            if (params.courseId) {
+                eq('course.id', params.long('courseId'))
+            }
+        }
+        render(view: "index", model: [enrollmentList: enrollments, enrollmentCount: enrollments.totalCount])
     }
 
     def show(Long id) {
-        respond enrollmentService.get(id)
+        def enrollment = enrollmentService.get(id)
+        if (!enrollment) {
+            notFound()
+            return
+        }
+        render(view: "show", model: [enrollment: enrollment])
     }
 
+    @Transactional
     def create() {
-        respond new Enrollment(params), model: [
+        render(view: "create", model: [
+                enrollment: new Enrollment(params),
                 students: Student.list(),
                 courses: Course.list()
-        ]
+        ])
     }
 
-
-
+    @Transactional
     def save(Enrollment enrollment) {
         if (enrollment == null) {
             notFound()
             return
         }
 
-        try {
-            enrollmentService.save(enrollment)
-        } catch (RuntimeException e) {
-            flash.message = e.message
-            respond enrollment.errors, view: 'create', model: [
+        if (!enrollment.student || !enrollment.course) {
+            flash.message = "يجب تحديد الطالب والمادة"
+            render(view: 'create', model: [
+                    enrollment: enrollment,
                     students: Student.list(),
                     courses: Course.list()
-            ]
+            ])
             return
-
-
         }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [
-                        message(code: 'enrollment.label', default: 'Enrollment'),
-                        enrollment.id
-                ])
-                redirect enrollment
-            }
-            '*' { respond enrollment, [status: CREATED] }
+        try {
+            enrollment = enrollmentService.save(enrollment)
+            flash.message = "تم تسجيل الطالب في المادة بنجاح"
+            redirect(action: "show", id: enrollment.id)
+        } catch (RuntimeException e) {
+            flash.message = e.message
+            render(view: 'create', model: [
+                    enrollment: enrollment,
+                    students: Student.list(),
+                    courses: Course.list()
+            ])
         }
     }
 
     def edit(Long id) {
-        respond enrollmentService.get(id)
+        def enrollment = enrollmentService.get(id)
+        if (!enrollment) {
+            notFound()
+            return
+        }
+        render(view: "edit", model: [enrollment: enrollment])
     }
 
     def update(Enrollment enrollment) {
@@ -73,20 +95,15 @@ class EnrollmentController {
             enrollmentService.save(enrollment)
         } catch (RuntimeException e) {
             flash.message = e.message
-            respond enrollment, view: 'edit'
+            render(view: 'edit', model: [enrollment: enrollment])
             return
         }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [
-                        message(code: 'enrollment.label', default: 'Enrollment'),
-                        enrollment.id
-                ])
-                redirect enrollment
-            }
-            '*' { respond enrollment, [status: OK] }
-        }
+        flash.message = message(code: 'default.updated.message', args: [
+                message(code: 'enrollment.label', default: 'Enrollment'),
+                enrollment.id
+        ])
+        redirect(action: "show", id: enrollment.id)
     }
 
     def delete(Long id) {
@@ -97,23 +114,17 @@ class EnrollmentController {
 
         enrollmentService.delete(id)
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [
-                        message(code: 'enrollment.label', default: 'Enrollment'),
-                        id
-                ])
-                redirect action: "index", method: "GET"
-            }
-            '*' { render status: NO_CONTENT }
-        }
+        flash.message = message(code: 'default.deleted.message', args: [
+                message(code: 'enrollment.label', default: 'Enrollment'),
+                id
+        ])
+        redirect(action: "index")
     }
 
     def gpa() {
         Long studentId = params.long("studentId")
         if (!studentId) {
-            log.warn("⚠️ [gpa] Missing studentId parameter")
-            render status: BAD_REQUEST, text: "⚠️ Missing studentId"
+            render status: BAD_REQUEST, text: "Missing studentId"
             return
         }
 
@@ -121,19 +132,14 @@ class EnrollmentController {
         def gpa = enrollmentService.calculateGPA(studentId)
         log.info("🎓 [gpa] GPA for student $studentId is: $gpa")
 
-        render "🎓 GPA for student ${studentId} is: ${gpa}"
+        render(view: "gpa", model: [studentId: studentId, gpa: gpa])
     }
 
     protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [
-                        message(code: 'enrollment.label', default: 'Enrollment'),
-                        params.id
-                ])
-                redirect action: "index", method: "GET"
-            }
-            '*' { render status: NOT_FOUND }
-        }
+        flash.message = message(code: 'default.not.found.message', args: [
+                message(code: 'enrollment.label', default: 'Enrollment'),
+                params.id
+        ])
+        redirect(action: "index")
     }
 }

@@ -8,33 +8,32 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <asset:link rel="icon" href="favicon.ico" type="image/x-ico"/>
-
     <asset:stylesheet src="application.css"/>
 
     <style>
-    :root {
-        --primary-color: #df8de8;
-        --secondary-color: #e699ea;
-        --light-color: #f8f9fa;
-        --dark-color: #343a40;
-        --text-color: #212529;
-    }
+:root {
+    --primary-color: #8a307f; /* Changed from #4CAF50 */
+    --secondary-color: #6883bc; /* Changed from #2E7D32 */
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --text-color: #212529;
+    --accent-color: #79a7d3; /* New color */
+}
 
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: var(--text-color);
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        margin: 0;
-    }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
 
-    /* Header Styles */
-    .navbar {
-        background-color: var(--primary-color) !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        padding: 0.8rem 1rem;
-    }
+.navbar {
+    background-color: var(--primary-color) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 0.8rem 1rem;
+}
 
     .navbar-brand {
         display: flex;
@@ -59,13 +58,11 @@
         transform: translateY(-2px);
     }
 
-    /* Main Content */
     .main-content {
         flex: 1;
         padding: 2rem 0;
     }
 
-    /* Footer Styles */
     .footer {
         background-color: var(--dark-color);
         color: white;
@@ -118,37 +115,58 @@
         color: #6c757d;
     }
 
-    /* Responsive Adjustments */
     @media (max-width: 768px) {
         .navbar-brand img {
             height: 25px;
         }
-
         .footer .row {
             flex-direction: column;
         }
-
         .footer .col {
             text-align: center;
             margin-bottom: 30px;
         }
-
         .footer img {
             float: none !important;
             display: block;
             margin: 0 auto 15px;
         }
     }
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+}
+
+/* New button styles using the accent color */
+.btn-success {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.btn-outline-primary {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
     </style>
 
     <g:layoutHead/>
 </head>
 
 <body>
-<!-- Header -->
 <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
     <div class="container">
-        <a class="navbar-brand" href="/#">
+        <a class="navbar-brand" href="/">
             <asset:image src="grails.svg" alt="Grails Logo"/>
             <span>Grails Application</span>
         </a>
@@ -159,67 +177,61 @@
         <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
+                    <a class="nav-link" href="/">🏠 Home</a>
                 </li>
-                <li class="nav-item">
-                    <g:link class="nav-link" controller="student" action="index">Student</g:link>
-                </li>
-                <li class="nav-item">
-                    <g:link class="nav-link" controller="course" action="index">Course</g:link>
-                </li>
-                <li class="nav-item">
-                    <g:link class="nav-link" controller="enrollment" action="index">Enrollment</g:link>
-                </li>
+
+                <sec:ifNotLoggedIn>
+                    <li class="nav-item">
+                        <g:link class="nav-link" controller="auth" action="login">🔐 Login</g:link>
+                    </li>
+
+                </sec:ifNotLoggedIn>
+
+                <sec:ifLoggedIn>
+                    <sec:ifAllGranted roles="ROLE_ADMIN">
+                        <li class="nav-item">
+                            <g:link class="nav-link" controller="student" action="index">👤 Students</g:link>
+                        </li>
+                        <li class="nav-item">
+                            <g:link class="nav-link" controller="course" action="index">📘 Courses</g:link>
+                        </li>
+                        <li class="nav-item">
+                            <g:link class="nav-link" controller="enrollment" action="index">📝 Enrollments</g:link>
+                        </li>
+                    </sec:ifAllGranted>
+
+                    <sec:ifAllGranted roles="ROLE_USER">
+                        <li class="nav-item">
+                            <g:link class="nav-link" controller="myCourses" action="index">📚 My Courses and GPA</g:link>
+                        </li>
+                    </sec:ifAllGranted>
+
+                    <li class="nav-item">
+                        <g:link class="nav-link" controller="auth" action="logout">🚪 Logout (<sec:username/>)</g:link>
+                    </li>
+                </sec:ifLoggedIn>
             </ul>
         </div>
     </div>
 </nav>
 
-<!-- Main Content -->
 <main class="main-content">
     <div class="container">
+        <g:if test="${flash.error}">
+            <div class="alert alert-danger">${flash.error}</div>
+        </g:if>
         <g:layoutBody/>
     </div>
 </main>
 
-<!-- Footer -->
 <footer class="footer" role="contentinfo">
     <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <a href="http://guides.grails.org" target="_blank">
-                    <asset:image src="advancedgrails.svg" alt="Grails Guides"/>
-                </a>
-                <strong><a href="http://guides.grails.org" target="_blank">Grails Guides</a></strong>
-                <p>Building your first Grails app? Looking to add security, or create a Single-Page-App? Check out the <a href="http://guides.grails.org" target="_blank">Grails Guides</a> for step-by-step tutorials.</p>
-            </div>
-
-            <div class="col-md-4">
-                <a href="http://docs.grails.org" target="_blank">
-                    <asset:image src="documentation.svg" alt="Grails Documentation"/>
-                </a>
-                <strong><a href="http://docs.grails.org" target="_blank">Documentation</a></strong>
-                <p>Ready to dig in? You can find in-depth documentation for all the features of Grails in the <a href="http://docs.grails.org" target="_blank">User Guide</a>.</p>
-            </div>
-
-            <div class="col-md-4">
-                <a href="https://slack.grails.org" target="_blank">
-                    <asset:image src="slack.svg" alt="Grails Slack"/>
-                </a>
-                <strong><a href="https://slack.grails.org" target="_blank">Join the Community</a></strong>
-                <p>Get feedback and share your experience with other Grails developers in the community <a href="https://slack.grails.org" target="_blank">Slack channel</a>.</p>
-            </div>
-        </div>
 
         <div class="footer-copyright">
             <p>&copy; <g:formatDate date="${new Date()}" format="yyyy"/> Grails Application. All rights reserved.</p>
         </div>
     </div>
 </footer>
-
-<div id="spinner" class="spinner" style="display:none;">
-    <g:message code="spinner.alt" default="Loading&hellip;"/>
-</div>
 
 <asset:javascript src="application.js"/>
 </body>
