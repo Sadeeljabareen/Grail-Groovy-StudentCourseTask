@@ -4,6 +4,25 @@
     <meta name="layout" content="main"/>
     <g:set var="entityName" value="${message(code: 'student.label', default: 'Student')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
+    <style>
+    .student-photo-thumb {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    .no-photo-thumb {
+        width: 50px;
+        height: 50px;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        color: #6c757d;
+        font-size: 0.8rem;
+    }
+    </style>
 </head>
 <body>
 <div id="content" role="main">
@@ -43,8 +62,12 @@
                         <tr>
                             <td>
                                 <g:if test="${student.photoUrl}">
-                                    <img src="${student.photoUrl}" class="img-thumbnail" style="max-width: 50px;"/>
+                                    <img src="${createLink(controller: 'student', action: 'serveImage', params: [filename: student.photoUrl])}"
+                                         class="student-photo-thumb" alt="Student photo"/>
                                 </g:if>
+                                <g:else>
+                                    <div class="no-photo-thumb">No Photo</div>
+                                </g:else>
                             </td>
                             <td>${student.name}</td>
                             <td>${student.email}</td>

@@ -16,4 +16,9 @@ class Student {
             roles && roles.contains('ROLE_USER') && !roles.contains('ROLE_ADMIN')
         }
     }
+
+
+    String toString() {
+        name
+    }
 }

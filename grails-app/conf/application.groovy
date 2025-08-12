@@ -4,6 +4,9 @@ grails.plugin.springsecurity.authority.className = 'CLI.Role'
 
 grails.plugin.springsecurity.password.algorithm = 'bcrypt'
 grails.plugin.springsecurity.logout.postOnly = false
+// إعدادات رفع الملفات إلى سطح المكتب
+grails.upload.directory = "${System.getProperty('user.home')}/Desktop/student_uploads"
+grails.upload.path = "/student/serveImage" // سيكون هذا المسار للعرض عبر الـ controller
 
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 		[pattern: '/',               access: ['permitAll']],

@@ -5,15 +5,40 @@ import grails.rest.Resource
 import grails.validation.ValidationException
 import groovy.util.logging.Slf4j
 import org.springframework.web.multipart.MultipartFile
+import grails.core.GrailsApplication
 
 @Resource()
 @Slf4j
 class StudentController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-
+    static allowedMethods = [
+            save: "POST",
+            update: ["PUT", "POST"], // Allow both PUT and POST for updates
+            delete: "DELETE"
+    ]
     StudentService studentService
     def springSecurityService
+    GrailsApplication grailsApplication // Fixed type declaration
+
+    def serveImage() {
+        String filename = params.filename
+        if (!filename) {
+            response.sendError(404)
+            return
+        }
+
+        String uploadDir = grailsApplication.config.getProperty('grails.upload.directory', String)
+        File imageFile = new File(uploadDir, filename)
+
+        if (!imageFile.exists()) {
+            response.sendError(404)
+            return
+        }
+
+        response.contentType = URLConnection.guessContentTypeFromName(imageFile.name)
+        response.outputStream << imageFile.newInputStream()
+        response.outputStream.flush()
+    }
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -22,7 +47,6 @@ class StudentController {
                 studentCount: studentService.count()
         ])
     }
-
 
     def create() {
         render(view: "create", model: [
@@ -33,23 +57,20 @@ class StudentController {
 
     @Transactional
     def save() {
-
-        // التحقق من البيانات المطلوبة
         if (!params.username || !params.password || !params.name || !params.email) {
-            flash.error = "جميع الحقول مطلوبة"
+            flash.error = "All fields are required"
             render(view: "create", model: [student: new Student(params), user: new User(params)])
             return
         }
 
-        // التحقق من عدم تكرار اسم المستخدم أو البريد الإلكتروني
         if (User.findByUsername(params.username)) {
-            flash.error = "اسم المستخدم موجود مسبقاً"
+            flash.error = "Username already exists"
             render(view: "create", model: [student: new Student(params), user: new User(params)])
             return
         }
 
         if (Student.findByEmail(params.email)) {
-            flash.error = "البريد الإلكتروني موجود مسبقاً"
+            flash.error = "Email already exists"
             render(view: "create", model: [student: new Student(params), user: new User(params)])
             return
         }
@@ -69,64 +90,44 @@ class StudentController {
         MultipartFile photo = request.getFile('photo')
         if (photo && !photo.empty) {
             try {
-                if (photo.size > 2000000) { // 2MB
-                    flash.error = "حجم الصورة يجب أن يكون أقل من 2MB"
-                    render(view: "create", model: [
-                            student: student,
-                            user: user
-                    ])
+                if (photo.size > 2000000) {
+                    flash.error = "Image size must be less than 2MB"
+                    render(view: "create", model: [student: student, user: user])
                     return
                 }
 
-                // مسار الحفظ المطلق
-                String uploadDir = "C:\\Users\\Dell\\CLI\\webapps\\uploads"
+                String uploadDir = grailsApplication.config.getProperty('grails.upload.directory', String)
                 File uploadFolder = new File(uploadDir)
 
-                // إنشاء المجلد إذا لم يكن موجوداً
                 if (!uploadFolder.exists()) {
                     uploadFolder.mkdirs()
-                    log.info("تم إنشاء مجلد الرفع في: ${uploadFolder.absolutePath}")
+                    log.info("Upload folder created at: ${uploadFolder.absolutePath}")
                 }
 
-                // إنشاء اسم فريد للملف
                 String filename = "${System.currentTimeMillis()}_${photo.originalFilename.replaceAll('[^a-zA-Z0-9.-]', '_')}"
                 File destination = new File(uploadFolder, filename)
-
-                // حفظ الملف
                 photo.transferTo(destination)
 
-                // تخزين المسار النسبي في قاعدة البيانات (نسبي للرابط)
-                student.photoUrl = "/uploads/${filename}"
+                student.photoUrl = filename // Store only filename
 
             } catch (IOException e) {
-                log.error("فشل في حفظ الصورة", e)
-                flash.error = "فشل في حفظ الصورة. يرجى المحاولة مرة أخرى."
-                render(view: "create", model: [
-                        student: student,
-                        user: user
-                ])
+                log.error("Failed to save image", e)
+                flash.error = "Failed to save image. Please try again."
+                render(view: "create", model: [student: student, user: user])
                 return
             }
         }
 
         try {
-            // حفظ المستخدم أولاً
             user.save(failOnError: true)
-
-            // تعيين دور المستخدم
-            def role = Role.findByAuthority('ROLE_USER')
-            if (!role) {
-                throw new Exception("دور المستخدم غير موجود في قاعدة البيانات")
-            }
+            def role = Role.findByAuthority('ROLE_USER') ?: new Role(authority: 'ROLE_USER').save(failOnError: true)
             UserRole.create(user, role, true)
-
-            // حفظ بيانات الطالب
             student.save(failOnError: true)
 
-            flash.message = "تم إنشاء الطالب بنجاح"
+            flash.message = "Student created successfully"
             redirect(action: "show", id: student.id)
         } catch (Exception e) {
-            log.error("خطأ في حفظ بيانات الطالب", e)
+            log.error("Error saving student data", e)
             render(view: "create", model: [
                     student: student,
                     user: user,
@@ -171,49 +172,50 @@ class StudentController {
         render(view: "edit", model: [student: student])
     }
 
+    @Transactional
     def update(Student student) {
         if (!student) {
             notFound()
             return
         }
 
-        // Handle photo upload
+        if (student.hasErrors()) {
+            respond student.errors, view:'edit'
+            return
+        }
+
         MultipartFile photo = request.getFile('photo')
         if (photo && !photo.empty) {
             try {
-                if (photo.size > 2000000) { // 2MB
-                    flash.error = "حجم الصورة يجب أن يكون أقل من 2MB"
+                if (photo.size > 2000000) {
+                    flash.error = "Image size must be less than 2MB"
                     render(view: "edit", model: [student: student])
                     return
                 }
 
-                // مسار الحفظ المطلق
-                String uploadDir = "C:\\Users\\Dell\\CLI\\webapps\\uploads"
+                String uploadDir = grailsApplication.config.getProperty('grails.upload.directory', String)
                 File uploadFolder = new File(uploadDir)
 
                 if (!uploadFolder.exists()) {
                     uploadFolder.mkdirs()
-                    log.info("تم إنشاء مجلد الرفع في: ${uploadFolder.absolutePath}")
                 }
 
                 String filename = "${System.currentTimeMillis()}_${photo.originalFilename.replaceAll('[^a-zA-Z0-9.-]', '_')}"
                 File destination = new File(uploadFolder, filename)
                 photo.transferTo(destination)
 
-                // حذف الصورة القديمة إذا كانت موجودة
                 if (student.photoUrl) {
-                    String oldFilePath = "${uploadDir}\\${student.photoUrl.replace('/uploads/', '')}"
-                    File oldFile = new File(oldFilePath)
+                    File oldFile = new File(uploadDir, student.photoUrl)
                     if (oldFile.exists()) {
                         oldFile.delete()
                     }
                 }
 
-                student.photoUrl = "/uploads/${filename}"
+                student.photoUrl = filename
 
             } catch (IOException e) {
-                log.error("فشل في تحديث الصورة", e)
-                flash.error = "فشل في تحديث الصورة. يرجى المحاولة مرة أخرى."
+                log.error("Failed to update image", e)
+                flash.error = "Failed to update image. Please try again."
                 render(view: "edit", model: [student: student])
                 return
             }
@@ -221,13 +223,12 @@ class StudentController {
 
         try {
             studentService.save(student)
-            flash.message = "تم تحديث بيانات الطالب بنجاح"
+            flash.message = "Student updated successfully"
             redirect(action: "show", id: student.id)
         } catch (ValidationException e) {
             render(view: "edit", model: [student: student])
         }
     }
-
 
     def delete(Long id) {
         def student = studentService.get(id)
@@ -237,32 +238,30 @@ class StudentController {
         }
 
         try {
-            // حذف الصورة إذا كانت موجودة
+            // Delete image if exists
             if (student.photoUrl) {
-                String uploadDir = "webapps/uploads"
-                String filePath = "${uploadDir}/${student.photoUrl.replace('/uploads/', '')}"
-                File photoFile = new File(filePath)
+                String uploadDir = grailsApplication.config.getProperty('grails.upload.directory', String)
+                File photoFile = new File(uploadDir, student.photoUrl)
                 if (photoFile.exists()) {
                     photoFile.delete()
                 }
             }
 
-            // حذف حساب المستخدم أولاً
             User user = student.user
             studentService.delete(id)
             user.delete()
 
-            flash.message = "تم حذف الطالب بنجاح."
+            flash.message = "Student deleted successfully"
             redirect(action: "index")
         } catch (Exception e) {
-            log.error("خطأ في حذف الطالب", e)
-            flash.error = "خطأ في حذف الطالب: ${e.message}"
+            log.error("Error deleting student", e)
+            flash.error = "Error deleting student: ${e.message}"
             redirect(action: "show", id: id)
         }
     }
 
     protected void notFound() {
-        flash.message = "الطالب غير موجود"
+        flash.message = "Student not found"
         redirect(action: "index")
     }
 }

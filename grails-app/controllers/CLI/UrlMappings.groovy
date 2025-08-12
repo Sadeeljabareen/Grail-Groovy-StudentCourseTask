@@ -3,6 +3,8 @@ package CLI
 class UrlMappings {
 
     static mappings = {
+        "/student/serveImage/$filename"(controller: 'student', action: 'serveImage')
+
         "/uploads/$filename**"(controller: 'student', action: 'serveImage')
         // RESTful endpoints + GSP pages
         "/student"(controller: 'student') {
@@ -10,6 +12,7 @@ class UrlMappings {
         }
         "/student/create"(controller: 'student', action: 'create')
         "/student/edit/$id"(controller: 'student', action: 'edit')
+        "/student/$id"(controller: 'student', action: 'update', method: "PUT")
         "/student/show/$id"(controller: 'student', action: 'show')
         "/student/delete/$id"(controller: 'student', action: 'delete', method: "DELETE")
 
