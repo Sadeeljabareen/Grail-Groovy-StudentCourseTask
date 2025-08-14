@@ -16,9 +16,23 @@ class CourseController {
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
+
+        def criteria = Course.createCriteria()
+        def courseList = criteria.list(params) {
+            if (params.title) {
+                ilike('title', "%${params.title}%")
+            }
+            if (params.description) {
+                ilike('description', "%${params.description}%")
+            }
+            if (params.credits) {
+                eq('credits', params.double('credits'))
+            }
+        }
+
         render(view: "index", model: [
-                courseList: courseService.list(params),
-                courseCount: courseService.count()
+                courseList: courseList,
+                courseCount: courseList.totalCount
         ])
     }
 

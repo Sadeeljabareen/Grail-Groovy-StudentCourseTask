@@ -39,6 +39,46 @@
             </div>
         </section>
 
+
+        <section class="row">
+            <div class="col-12">
+                <g:form action="index" method="GET">
+                    <div class="card mb-4">
+                        <div class="card-header">Search Students</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="name">Name</label>
+                                        <g:textField name="name" value="${params.name}" class="form-control" placeholder="Search by name"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="email">Email</label>
+                                        <g:textField name="email" value="${params.email}" class="form-control" placeholder="Search by email"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="username">Username</label>
+                                        <g:textField name="username" value="${params.username}" class="form-control" placeholder="Search by username"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-12">
+                                    <g:submitButton name="search" value="Search" class="btn btn-primary"/>
+                                    <g:link action="index" class="btn btn-secondary">Reset</g:link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </g:form>
+            </div>
+        </section>
+
+
         <section class="row">
             <div id="list-student" class="col-12 content scaffold-list" role="main">
                 <h1><g:message code="default.list.label" args="[entityName]"/></h1>

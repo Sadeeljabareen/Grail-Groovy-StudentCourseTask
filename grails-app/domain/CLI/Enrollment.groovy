@@ -11,7 +11,7 @@ class Enrollment {
         student nullable: false
         course nullable: false
         enrollmentDate nullable: false
-        grade nullable: true, min: 0.0d, max: 4.0d  // GPA عادة من 0 إلى 4
+        grade nullable: true, min: 0.0d, max: 4.0d
     }
 
     String toString() {

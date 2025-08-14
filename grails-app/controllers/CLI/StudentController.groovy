@@ -13,12 +13,12 @@ class StudentController {
 
     static allowedMethods = [
             save: "POST",
-            update: ["PUT", "POST"], // Allow both PUT and POST for updates
+            update: ["PUT", "POST"],
             delete: "DELETE"
     ]
     StudentService studentService
     def springSecurityService
-    GrailsApplication grailsApplication // Fixed type declaration
+    GrailsApplication grailsApplication
 
     def serveImage() {
         String filename = params.filename
@@ -42,9 +42,25 @@ class StudentController {
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
+
+        def criteria = Student.createCriteria()
+        def studentList = criteria.list(params) {
+            if (params.name) {
+                ilike('name', "%${params.name}%")
+            }
+            if (params.email) {
+                ilike('email', "%${params.email}%")
+            }
+            if (params.username) {
+                user {
+                    ilike('username', "%${params.username}%")
+                }
+            }
+        }
+
         render(view: "index", model: [
-                studentList: studentService.list(params),
-                studentCount: studentService.count()
+                studentList: studentList,
+                studentCount: studentList.totalCount
         ])
     }
 

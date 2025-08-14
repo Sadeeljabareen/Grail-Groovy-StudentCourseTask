@@ -23,6 +23,19 @@ class EnrollmentController {
             if (params.courseId) {
                 eq('course.id', params.long('courseId'))
             }
+            if (params.studentName) {
+                student {
+                    ilike('name', "%${params.studentName}%")
+                }
+            }
+            if (params.courseTitle) {
+                course {
+                    ilike('title', "%${params.courseTitle}%")
+                }
+            }
+            if (params.grade) {
+                eq('grade', params.double('grade'))
+            }
         }
         render(view: "index", model: [enrollmentList: enrollments, enrollmentCount: enrollments.totalCount])
     }
@@ -53,7 +66,7 @@ class EnrollmentController {
         }
 
         if (!enrollment.student || !enrollment.course) {
-            flash.message = "يجب تحديد الطالب والمادة"
+            flash.message = "you must choose student and corse"
             render(view: 'create', model: [
                     enrollment: enrollment,
                     students: Student.list(),
@@ -64,7 +77,7 @@ class EnrollmentController {
 
         try {
             enrollment = enrollmentService.save(enrollment)
-            flash.message = "تم تسجيل الطالب في المادة بنجاح"
+            flash.message = "success enrollment"
             redirect(action: "show", id: enrollment.id)
         } catch (RuntimeException e) {
             flash.message = e.message

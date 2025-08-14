@@ -94,7 +94,7 @@
         <div class="form-group">
             <label>Profile Photo</label>
             <input type="file" name="photo" class="form-control" accept="image/*"/>
-            <small class="text-muted">Max size: 2MB (JPEG, PNG)</small>
+            <small class="text-muted">Max size: 2MB (JPEG, PNG,svg)</small>
         </div>
 
         <div class="form-group">

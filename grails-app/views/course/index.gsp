@@ -25,6 +25,46 @@
             </div>
         </section>
 
+
+        <section class="row">
+            <div class="col-12">
+                <g:form action="index" method="GET">
+                    <div class="card mb-4">
+                        <div class="card-header">Search Courses</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="title">Title</label>
+                                        <g:textField name="title" value="${params.title}" class="form-control" placeholder="Search by title"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="description">Description</label>
+                                        <g:textField name="description" value="${params.description}" class="form-control" placeholder="Search by description"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="credits">Credits</label>
+                                        <g:textField name="credits" value="${params.credits}" class="form-control" placeholder="Search by credits"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-12">
+                                    <g:submitButton name="search" value="Search" class="btn btn-primary"/>
+                                    <g:link action="index" class="btn btn-secondary">Reset</g:link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </g:form>
+            </div>
+        </section>
+
+
         <!-- Course List -->
         <section class="row">
             <div id="list-course" class="col-12 content scaffold-list" role="main">

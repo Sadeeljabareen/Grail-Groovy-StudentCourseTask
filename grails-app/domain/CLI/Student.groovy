@@ -11,7 +11,7 @@ class Student {
         email email: true, blank: false, unique: true
         photoUrl nullable: true
         user nullable: false, unique: true, validator: { user ->
-            // التأكد أن المستخدم له دور ROLE_USER فقط
+            // check if user has ROLE_USER
             def roles = user?.authorities*.authority
             roles && roles.contains('ROLE_USER') && !roles.contains('ROLE_ADMIN')
         }
