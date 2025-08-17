@@ -7,17 +7,14 @@ class BootStrap {
     SpringSecurityService springSecurityService
 
     def init = { servletContext ->
-        // إنشاء مجلد التحميل إذا لم يكن موجوداً
         File uploadDir = new File("${servletContext.getRealPath('/')}uploads")
         if (!uploadDir.exists()) {
             uploadDir.mkdirs()
         }
         User.withTransaction {
-            // إنشاء الأدوار
             def adminRole = Role.findByAuthority('ROLE_ADMIN') ?: new Role(authority: 'ROLE_ADMIN').save(failOnError: true)
             def userRole = Role.findByAuthority('ROLE_USER') ?: new Role(authority: 'ROLE_USER').save(failOnError: true)
 
-            // إنشاء مستخدم مسؤول
             if (!User.findByUsername('admin')) {
                 def adminUser = new User(
                         username: 'admin',
@@ -27,15 +24,13 @@ class BootStrap {
 
                 UserRole.create(adminUser, adminRole, true)
 
-                // إنشاء ملف المسؤول (الطالب)
                 new Student(
                         name: 'Admin User',
-                        email: 'admin@university.edu',
+                        email: 'admin@gmail.com',
                         user: adminUser
                 ).save(failOnError: true)
             }
 
-            // إنشاء مستخدم عادي
             if (!User.findByUsername('student1')) {
                 def studentUser = new User(
                         username: 'student1',
@@ -45,17 +40,15 @@ class BootStrap {
 
                 UserRole.create(studentUser, userRole, true)
 
-                // إنشاء ملف الطالب
                 new Student(
                         name: 'John Doe',
-                        email: 'john@university.edu',
+                        email: 'john@gmail.com',
                         user: studentUser,
                         photoUrl: '/assets/images/student1.png'
                 ).save(failOnError: true)
             }
         }
 
-        // إنشاء بعض المواد إذا لم تكن موجودة
         Course.withTransaction {
             if (Course.count() == 0) {
                 new Course(title: 'Mathematics', description: 'Basic Mathematics', credits: 3.0).save(failOnError: true)

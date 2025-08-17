@@ -6,9 +6,15 @@ class Student {
     String photoUrl
     User user
 
+    static belongsTo = [user: User]
+
     static constraints = {
         name blank: false
-        email email: true, blank: false, unique: true
+        email blank: false, email: true, validator: { val, obj ->
+            if (!val?.endsWith("@gmail.com")) {
+                return ['student.email.invalidDomain', val]
+            }
+        }
         photoUrl nullable: true
         user nullable: false, unique: true, validator: { user ->
             // check if user has ROLE_USER

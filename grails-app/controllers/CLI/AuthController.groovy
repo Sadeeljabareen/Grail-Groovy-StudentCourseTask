@@ -2,6 +2,9 @@ package CLI
 
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.rest.Resource
+
+@Resource()
 
 class AuthController {
 

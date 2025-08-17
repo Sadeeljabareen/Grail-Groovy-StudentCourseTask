@@ -73,43 +73,57 @@ class StudentController {
 
     @Transactional
     def save() {
+        // Validate required fields first
         if (!params.username || !params.password || !params.name || !params.email) {
             flash.error = "All fields are required"
             render(view: "create", model: [student: new Student(params), user: new User(params)])
             return
         }
 
+        // Validate email format early
+        if (!params.email?.endsWith("@gmail.com")) {
+            flash.error = "Email must be a Gmail address"
+            render(view: "create", model: [student: new Student(params), user: new User(params)])
+            return
+        }
+
+        // Check for existing username
         if (User.findByUsername(params.username)) {
             flash.error = "Username already exists"
             render(view: "create", model: [student: new Student(params), user: new User(params)])
             return
         }
 
+        // Check for existing email
         if (Student.findByEmail(params.email)) {
             flash.error = "Email already exists"
             render(view: "create", model: [student: new Student(params), user: new User(params)])
             return
         }
 
-        def user = new User(
-                username: params.username,
-                password: params.password
-        )
+        try {
+            // Create and save User first
+            def user = new User(
+                    username: params.username,
+                    password: params.password
+            ).save(failOnError: true)
 
-        def student = new Student(
-                name: params.name,
-                email: params.email,
-                user: user
-        )
+            // Assign role to user
+            def role = Role.findByAuthority('ROLE_USER') ?: new Role(authority: 'ROLE_USER').save(failOnError: true)
+            UserRole.create(user, role, true)
 
-        // Handle photo upload
-        MultipartFile photo = request.getFile('photo')
-        if (photo && !photo.empty) {
-            try {
+            // Now create Student with the persisted User
+            def student = new Student(
+                    name: params.name,
+                    email: params.email,
+                    user: user
+            )
+
+            // Handle photo upload
+            MultipartFile photo = request.getFile('photo')
+            if (photo && !photo.empty) {
                 if (photo.size > 2000000) {
-                    flash.error = "Image size must be less than 2MB"
-                    render(view: "create", model: [student: student, user: user])
-                    return
+                    throw new ValidationException("Image size must be less than 2MB", student.errors)
                 }
 
                 String uploadDir = grailsApplication.config.getProperty('grails.upload.directory', String)
@@ -117,46 +131,36 @@ class StudentController {
 
                 if (!uploadFolder.exists()) {
                     uploadFolder.mkdirs()
-                    log.info("Upload folder created at: ${uploadFolder.absolutePath}")
                 }
 
                 String filename = "${System.currentTimeMillis()}_${photo.originalFilename.replaceAll('[^a-zA-Z0-9.-]', '_')}"
                 File destination = new File(uploadFolder, filename)
                 photo.transferTo(destination)
 
-                student.photoUrl = filename // Store only filename
-
-            } catch (IOException e) {
-                log.error("Failed to save image", e)
-                flash.error = "Failed to save image. Please try again."
-                render(view: "create", model: [student: student, user: user])
-                return
+                student.photoUrl = filename
             }
-        }
 
-        try {
-            user.save(failOnError: true)
-            def role = Role.findByAuthority('ROLE_USER') ?: new Role(authority: 'ROLE_USER').save(failOnError: true)
-            UserRole.create(user, role, true)
+            // Now validate and save Student
             student.save(failOnError: true)
 
             flash.message = "Student created successfully"
             redirect(action: "show", id: student.id)
-        } catch (Exception e) {
-            log.error("Error saving student data", e)
+        } catch (ValidationException ve) {
+            log.error("Validation failed", ve)
+            def student = ve.target instanceof Student ? ve.target : new Student(params)
+            def user = ve.target instanceof User ? ve.target : new User(params)
             render(view: "create", model: [
                     student: student,
                     user: user,
+                    error: ve.message
+            ])
+        } catch (Exception e) {
+            log.error("Error saving student data", e)
+            render(view: "create", model: [
+                    student: new Student(params),
+                    user: new User(params),
                     error: e.message
             ])
-        }
-    }
-
-    def checkEmail() {
-        def email = params.email
-        def exists = email ? Student.findByEmail(email) != null : false
-        render(contentType: "application/json") {
-            [exists: exists]
         }
     }
 
@@ -246,6 +250,7 @@ class StudentController {
         }
     }
 
+    @Transactional
     def delete(Long id) {
         def student = studentService.get(id)
         if (!student) {
@@ -263,11 +268,17 @@ class StudentController {
                 }
             }
 
+            // Get the associated user
             User user = student.user
-            studentService.delete(id)
-            user.delete()
 
-            flash.message = "Student deleted successfully"
+            // First delete the student
+            studentService.delete(id)
+
+            // Then delete the user and its associations
+            UserRole.removeAll(user) // Remove all roles first
+            user.delete(flush: true) // Then delete the user
+
+            flash.message = "Student and associated user deleted successfully"
             redirect(action: "index")
         } catch (Exception e) {
             log.error("Error deleting student", e)

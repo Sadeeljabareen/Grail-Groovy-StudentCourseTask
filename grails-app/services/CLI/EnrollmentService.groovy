@@ -24,6 +24,13 @@ class EnrollmentService {
             throw new RuntimeException("Student or Course must be specified")
         }
 
+        // If enrollment has an ID, it's an update - skip duplicate check
+        if (enrollment.id) {
+            log.info("🔄 [save] Updating existing enrollment ID: ${enrollment.id}")
+            return enrollmentRepository.save(enrollment)
+        }
+
+        // Only check for duplicates for new enrollments
         log.info("🔍 [save] Checking enrollment for student ${enrollment.student.id} in course ${enrollment.course.id}")
 
         def existing = Enrollment.createCriteria().get {
@@ -36,7 +43,7 @@ class EnrollmentService {
             throw new RuntimeException("Student is already enrolled in this course.")
         }
 
-        log.info("✅ [save] Saving enrollment for student ${enrollment.student.id} in course ${enrollment.course.id}")
+        log.info("✅ [save] Saving new enrollment for student ${enrollment.student.id} in course ${enrollment.course.id}")
         return enrollmentRepository.save(enrollment)
     }
 

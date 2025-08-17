@@ -98,25 +98,27 @@ class EnrollmentController {
         render(view: "edit", model: [enrollment: enrollment])
     }
 
-    def update(Enrollment enrollment) {
-        if (enrollment == null) {
+    def updateGrade(Long id) {
+        def enrollment = enrollmentService.get(id)
+        if (!enrollment) {
             notFound()
             return
         }
 
         try {
+            enrollment.grade = params.double('grade')
             enrollmentService.save(enrollment)
-        } catch (RuntimeException e) {
-            flash.message = e.message
-            render(view: 'edit', model: [enrollment: enrollment])
-            return
-        }
+            flash.message = "Grade updated successfully"
 
-        flash.message = message(code: 'default.updated.message', args: [
-                message(code: 'enrollment.label', default: 'Enrollment'),
-                enrollment.id
-        ])
-        redirect(action: "show", id: enrollment.id)
+            if (params.returnTo == 'student') {
+                redirect(controller: 'student', action: 'show', id: enrollment.student.id)
+            } else {
+                redirect(action: "show", id: enrollment.id)
+            }
+        } catch (Exception e) {
+            flash.error = "Error updating grade: ${e.message}"
+            render(view: "edit", model: [enrollment: enrollment])
+        }
     }
 
     def delete(Long id) {
