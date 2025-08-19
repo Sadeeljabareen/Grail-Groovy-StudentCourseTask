@@ -11,6 +11,7 @@ import grails.core.GrailsApplication
 @Slf4j
 class StudentController {
 
+
     static allowedMethods = [
             save: "POST",
             update: ["PUT", "POST"],

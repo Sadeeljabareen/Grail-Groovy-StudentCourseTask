@@ -1,3 +1,6 @@
+# =========================
+# Grails & Hibernate config
+# =========================
 hibernate:
   cache:
     queries: false
@@ -5,37 +8,85 @@ hibernate:
     use_query_cache: false
 
 grails:
+  # -------- CORS (للسماح للمتصفح/الفرونت يضرب الـ API) --------
+  cors:
+    enabled: true
+    allowedOrigins:
+      - "*"            # بدّل "*" بقائمة دوميناتك إن بدك تقفل الوصول
+    allowedMethods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowedHeaders:
+      - Authorization
+      - Content-Type
+      - X-Requested-With
+
   plugin:
     springsecurity:
+      # -------- هوية المستخدمين والجداول (حسب الدومين تبعك) --------
       userLookup:
         userDomainClassName: 'CLI.User'
         authorityJoinClassName: 'CLI.UserRole'
       authority:
         className: 'CLI.Role'
+
+      # -------- تعطيل CSRF للـ API مؤقتًا --------
+      csrf:
+        disabled: true
+
+      # -------- قواعد الوصول --------
+      securityConfigType: "InterceptUrlMap"
+      rejectIfNoRule: false
+      interceptUrlMap:
+        - pattern: '/assets/**'
+          access: ['permitAll']
+        - pattern: '/api/**'
+          access: ['permitAll']   # مؤقتًا للتأكد أن الـ API شغّال
+        - pattern: '/**'
+          access: ['IS_AUTHENTICATED_ANONYMOUSLY']
+
+      # -------- سلاسل الفلاتر (اختياري ولكن مفيد للـ API) --------
+      filterChain:
+        chainMap:
+          - pattern: '/assets/**'
+            filters: 'none'
+          - pattern: '/api/**'
+            filters: 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter'
+          - pattern: '/**'
+            filters: 'JOINED_FILTERS'
+
+  # -------- حدود رفع الملفات (Controllers.upload) --------
   controllers:
     upload:
-      maxFileSize: 200000000000000 # 2MB
-      maxRequestSize: 200000000000000 # 2MB
+      maxFileSize: 20MB
+      maxRequestSize: 20MB
 
+# -------- إعدادات multipart للـ Spring --------
 spring:
   servlet:
     multipart:
       max-file-size: 20MB
       max-request-size: 20MB
 
+# =========================
+# DataSource (MySQL / H2)
+# =========================
 dataSource:
   pooled: true
   jmxExport: true
   driverClassName: com.mysql.cj.jdbc.Driver
   dialect: org.hibernate.dialect.MySQL8Dialect
   username: root
-  password: sadeel123456
+  password: sadeel123456   # غيّرها إذا مختلفة عندك محليًا
 
 environments:
   development:
     dataSource:
       dbCreate: update
-      url: jdbc:mysql://127.0.0.1:3306/university?useSSL=false&serverTimezone=UTC
+      url: jdbc:mysql://127.0.0.1:3306/university?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
 
   test:
     dataSource:
@@ -45,7 +96,7 @@ environments:
   production:
     dataSource:
       dbCreate: none
-      url: jdbc:mysql://localhost:3306/university?useSSL=false&serverTimezone=UTC
+      url: jdbc:mysql://localhost:3306/university?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
       properties:
         jmxEnabled: true
         initialSize: 5
@@ -63,4 +114,4 @@ environments:
         testWhileIdle: true
         testOnReturn: false
         jdbcInterceptors: ConnectionState
-        defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+        defaultTransactionIsolation: 2  # TRANSACTION_READ_COMMITTED
