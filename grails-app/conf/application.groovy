@@ -18,7 +18,6 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 		[pattern: '/**/css/**',      access: ['permitAll']],
 		[pattern: '/**/images/**',   access: ['permitAll']],
 		[pattern: '/**/favicon.ico', access: ['permitAll']],
-		// Authentication routes
 		[pattern: '/auth/**',        access: ['permitAll']],
 
 		// Admin routes
@@ -35,8 +34,8 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 
 		// Any other route requires authentication
 		[pattern: '/**',             access: ['IS_AUTHENTICATED_FULLY']],
-		[pattern: '/uploads/**', access: ['permitAll']]
-
+		[pattern: '/uploads/**', access: ['permitAll']],
+		[pattern: '/api/**', access: ['permitAll']]
 ]
 
 grails.plugin.springsecurity.filterChain.chainMap = [

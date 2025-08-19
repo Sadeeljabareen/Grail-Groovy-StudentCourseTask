@@ -60,7 +60,6 @@ dependencies {
     implementation "org.hibernate:hibernate-core:5.6.11.Final"
     implementation "org.grails.plugins:events"
     implementation "org.grails.plugins:gsp"
-
     // ✅ Logger fix
     runtimeOnly "org.slf4j:slf4j-api:1.7.36"
     implementation 'org.grails.plugins:spring-security-core:4.0.3'
@@ -77,6 +76,7 @@ dependencies {
 
 // Jakarta Validation
     implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+
 
 // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.30'

@@ -12,7 +12,7 @@ class Course {
         title blank: false
         description blank: false
         credits validator: { val, obj ->
-            if (val > 10) {
+            if (val > 6) {
                 return "course.credits.tooHigh"
             }
             return true
