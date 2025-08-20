@@ -4,8 +4,6 @@ import grails.rest.Resource
 import grails.validation.ValidationException
 import groovy.util.logging.Slf4j
 
-import static org.springframework.http.HttpStatus.*
-
 @Resource()
 @Slf4j
 class CourseController {

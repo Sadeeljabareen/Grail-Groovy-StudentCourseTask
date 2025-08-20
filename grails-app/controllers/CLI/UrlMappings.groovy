@@ -46,6 +46,11 @@ class UrlMappings {
         // home page
         "/"(view: "/index")
 
+// API
+        "/api/students"(resources: "student", namespace: 'api')
+        "/api/courses"(resources: "course", namespace: 'api')
+        "/api/enrollments"(resources: "enrollment", namespace: 'api')
+        "/api/users"(resources: "user", namespace: 'api')
 
         // errors
         "500"(view: '/error')
