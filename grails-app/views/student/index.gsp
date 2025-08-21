@@ -128,7 +128,7 @@
 
                 <g:if test="${studentCount > params.int('max')}">
                     <div class="pagination">
-                        <g:paginate total="${studentCount ?: 0}"/>
+                        <g:paginate total="${studentCount ?: 0}" params="${params}" action="index" controller="student"/>
                     </div>
                 </g:if>
             </div>

@@ -1,11 +1,8 @@
 package CLI
 
-import grails.rest.Resource
 import grails.validation.ValidationException
-import groovy.util.logging.Slf4j
 
-@Resource()
-@Slf4j
+
 class CourseController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]

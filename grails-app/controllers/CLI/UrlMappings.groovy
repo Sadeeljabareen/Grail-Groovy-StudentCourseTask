@@ -6,7 +6,6 @@ class UrlMappings {
         "/student/serveImage/$filename"(controller: 'student', action: 'serveImage')
 
         "/uploads/$filename**"(controller: 'student', action: 'serveImage')
-        // RESTful endpoints + GSP pages
         "/student"(controller: 'student') {
             action = [GET: 'index', POST: 'save']
         }

@@ -1,11 +1,9 @@
 package CLI
 
 import grails.gorm.transactions.Transactional
-import grails.rest.Resource
 import static org.springframework.http.HttpStatus.*
 import groovy.util.logging.Slf4j
 
-@Resource()
 @Slf4j
 class EnrollmentController {
 
@@ -49,7 +47,6 @@ class EnrollmentController {
         render(view: "show", model: [enrollment: enrollment])
     }
 
-    @Transactional
     def create() {
         render(view: "create", model: [
                 enrollment: new Enrollment(params),

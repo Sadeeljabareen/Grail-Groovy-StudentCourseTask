@@ -1,16 +1,13 @@
 package CLI
 
 import grails.gorm.transactions.Transactional
-import grails.rest.Resource
 import grails.validation.ValidationException
 import groovy.util.logging.Slf4j
 import org.springframework.web.multipart.MultipartFile
 import grails.core.GrailsApplication
 
-@Resource()
 @Slf4j
 class StudentController {
-
 
     static allowedMethods = [
             save: "POST",
@@ -18,7 +15,6 @@ class StudentController {
             delete: "DELETE"
     ]
     StudentService studentService
-    def springSecurityService
     GrailsApplication grailsApplication
 
     def serveImage() {
@@ -74,7 +70,6 @@ class StudentController {
 
     @Transactional
     def save() {
-        // Validate required fields first
         if (!params.username || !params.password || !params.name || !params.email) {
             flash.error = "All fields are required"
             render(view: "create", model: [student: new Student(params), user: new User(params)])
@@ -103,7 +98,6 @@ class StudentController {
         }
 
         try {
-            // Create and save User first
             def user = new User(
                     username: params.username,
                     password: params.password
@@ -120,7 +114,6 @@ class StudentController {
                     user: user
             )
 
-            // Handle photo upload
             MultipartFile photo = request.getFile('photo')
             if (photo && !photo.empty) {
                 if (photo.size > 2000000) {
@@ -141,7 +134,6 @@ class StudentController {
                 student.photoUrl = filename
             }
 
-            // Now validate and save Student
             student.save(failOnError: true)
 
             flash.message = "Student created successfully"
@@ -260,7 +252,6 @@ class StudentController {
         }
 
         try {
-            // Delete image if exists
             if (student.photoUrl) {
                 String uploadDir = grailsApplication.config.getProperty('grails.upload.directory', String)
                 File photoFile = new File(uploadDir, student.photoUrl)
@@ -269,15 +260,12 @@ class StudentController {
                 }
             }
 
-            // Get the associated user
             User user = student.user
 
-            // First delete the student
             studentService.delete(id)
 
-            // Then delete the user and its associations
-            UserRole.removeAll(user) // Remove all roles first
-            user.delete(flush: true) // Then delete the user
+            UserRole.removeAll(user)
+            user.delete(flush: true)
 
             flash.message = "Student and associated user deleted successfully"
             redirect(action: "index")

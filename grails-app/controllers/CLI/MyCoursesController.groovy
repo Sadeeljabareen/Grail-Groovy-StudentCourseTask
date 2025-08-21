@@ -1,14 +1,12 @@
 package CLI
 
+import grails.plugin.springsecurity.annotation.Secured
 
-import grails.rest.Resource
-
-//@Secured(['ROLE_USER'])
-@Resource()
+@Secured(['ROLE_USER'])
 class MyCoursesController {
 
     def springSecurityService
-    def enrollmentApiService
+    def enrollmentService
 
     def index() {
         def currentUser = springSecurityService.currentUser
@@ -21,7 +19,7 @@ class MyCoursesController {
         }
 
         def enrollments = Enrollment.findAllByStudent(student, [sort: 'course.title'])
-        def gpa = enrollmentApiService.calculateGPA(student.id)
+        def gpa = enrollmentService.calculateGPA(student.id)
 
         [enrollments: enrollments, student: student, gpa: gpa]
     }
