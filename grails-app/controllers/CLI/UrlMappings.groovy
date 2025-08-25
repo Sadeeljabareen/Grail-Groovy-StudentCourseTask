@@ -42,6 +42,15 @@ class UrlMappings {
             }
         }
 
+        // Books UI (HTML)
+        get "/books"(controller: 'book', action: 'index')
+        get "/books/$id"(controller: 'book', action: 'show')
+
+        // Read-only API (JSON)
+        get "/api/books"(controller: 'book', action: 'index')
+        get "/api/books/$id"(controller: 'book', action: 'show')
+
+
         // home page
         "/"(view: "/index")
 

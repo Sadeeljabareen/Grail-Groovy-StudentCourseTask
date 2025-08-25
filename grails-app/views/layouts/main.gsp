@@ -205,6 +205,11 @@ body {
                             <g:link class="nav-link" controller="myCourses" action="index">📚 My Courses and GPA</g:link>
                         </li>
                     </sec:ifAllGranted>
+                    <sec:ifAnyGranted roles="ROLE_USER,ROLE_ADMIN">
+                        <li class="nav-item">
+                            <g:link class="nav-link" controller="book" action="index">📚 Library</g:link>
+                        </li>
+                    </sec:ifAnyGranted>
 
                     <li class="nav-item">
                         <g:link class="nav-link" controller="auth" action="logout">🚪 Logout (<sec:username/>)</g:link>
