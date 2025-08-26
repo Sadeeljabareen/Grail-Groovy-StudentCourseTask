@@ -1,6 +1,3 @@
-# =========================
-# Grails & Hibernate config
-# =========================
 hibernate:
   cache:
     queries: false
@@ -8,11 +5,10 @@ hibernate:
     use_query_cache: false
 
 grails:
-  # -------- CORS (للسماح للمتصفح/الفرونت يضرب الـ API) --------
   cors:
     enabled: true
     allowedOrigins:
-      - "*"            # بدّل "*" بقائمة دوميناتك إن بدك تقفل الوصول
+      - "*"
     allowedMethods:
       - GET
       - POST
@@ -26,29 +22,25 @@ grails:
 
   plugin:
     springsecurity:
-      # -------- هوية المستخدمين والجداول (حسب الدومين تبعك) --------
       userLookup:
         userDomainClassName: 'CLI.User'
         authorityJoinClassName: 'CLI.UserRole'
       authority:
         className: 'CLI.Role'
 
-      # -------- تعطيل CSRF للـ API مؤقتًا --------
       csrf:
         disabled: true
 
-      # -------- قواعد الوصول --------
       securityConfigType: "InterceptUrlMap"
       rejectIfNoRule: false
       interceptUrlMap:
         - pattern: '/assets/**'
-          access: ['permitAll']
+          access: [ 'permitAll' ]
         - pattern: '/api/**'
-          access: ['permitAll']   # مؤقتًا للتأكد أن الـ API شغّال
+          access: [ 'permitAll' ]
         - pattern: '/**'
-          access: ['IS_AUTHENTICATED_ANONYMOUSLY']
+          access: [ 'IS_AUTHENTICATED_ANONYMOUSLY' ]
 
-      # -------- سلاسل الفلاتر (اختياري ولكن مفيد للـ API) --------
       filterChain:
         chainMap:
           - pattern: '/assets/**'
@@ -58,13 +50,11 @@ grails:
           - pattern: '/**'
             filters: 'JOINED_FILTERS'
 
-  # -------- حدود رفع الملفات (Controllers.upload) --------
   controllers:
     upload:
       maxFileSize: 20MB
       maxRequestSize: 20MB
 
-# -------- إعدادات multipart للـ Spring --------
 spring:
   servlet:
     multipart:
@@ -80,7 +70,7 @@ dataSource:
   driverClassName: com.mysql.cj.jdbc.Driver
   dialect: org.hibernate.dialect.MySQL8Dialect
   username: root
-  password: sadeel123456   # غيّرها إذا مختلفة عندك محليًا
+  password: sadeel123456
 
 environments:
   development:
@@ -114,4 +104,4 @@ environments:
         testWhileIdle: true
         testOnReturn: false
         jdbcInterceptors: ConnectionState
-        defaultTransactionIsolation: 2  # TRANSACTION_READ_COMMITTED
+        defaultTransactionIsolation: 2

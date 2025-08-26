@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="main" />
+    <meta name="layout" content="main"/>
     <title>Edit Grade</title>
     <style>
     .form-container {
@@ -10,11 +10,13 @@
         padding: 20px;
         background-color: #f8f9fa;
         border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
+
     .form-group {
         margin-bottom: 20px;
     }
+
     .info-box {
         background-color: #e9ecef;
         padding: 15px;
@@ -23,6 +25,7 @@
     }
     </style>
 </head>
+
 <body>
 <div class="container">
     <div class="form-container">
@@ -30,6 +33,7 @@
 
         <div class="info-box">
             <p><strong>Student:</strong> ${enrollment.student.name}</p>
+
             <p><strong>Course:</strong> ${enrollment.course.title}</p>
         </div>
 

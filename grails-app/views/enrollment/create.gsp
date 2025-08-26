@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="main" />
+    <meta name="layout" content="main"/>
     <title>Create Enrollment</title>
     <style>
     .form-container {
@@ -10,18 +10,21 @@
         padding: 20px;
         background-color: #f8f9fa;
         border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
+
     .form-label {
         font-weight: 500;
         margin-bottom: 5px;
     }
+
     .select-field {
         width: 100%;
         padding: 8px;
         border-radius: 4px;
         border: 1px solid #ced4da;
     }
+
     .grade-input {
         width: 100px;
         padding: 8px;
@@ -30,6 +33,7 @@
     }
     </style>
 </head>
+
 <body>
 <div class="container mt-4">
     <div class="form-container">
@@ -60,9 +64,9 @@
                           optionValue="name"
                           value="${enrollment?.student?.id}"
                           class="form-control select-field"
-                          noSelection="['':'-- Select Student --']"
-                          required="true" />
-                <g:fieldError field="student" bean="${enrollment}" class="text-danger small" />
+                          noSelection="['': '-- Select Student --']"
+                          required="true"/>
+                <g:fieldError field="student" bean="${enrollment}" class="text-danger small"/>
             </div>
 
             <div class="mb-4">
@@ -73,9 +77,9 @@
                           optionValue="title"
                           value="${enrollment?.course?.id}"
                           class="form-control select-field"
-                          noSelection="['':'-- Select Course --']"
-                          required="true" />
-                <g:fieldError field="course" bean="${enrollment}" class="text-danger small" />
+                          noSelection="['': '-- Select Course --']"
+                          required="true"/>
+                <g:fieldError field="course" bean="${enrollment}" class="text-danger small"/>
             </div>
 
             <div class="mb-4">
@@ -83,8 +87,8 @@
                 <g:field type="number" name="grade"
                          min="0" max="4" step="0.1"
                          value="${enrollment?.grade}"
-                         class="form-control grade-input" />
-                <g:fieldError field="grade" bean="${enrollment}" class="text-danger small" />
+                         class="form-control grade-input"/>
+                <g:fieldError field="grade" bean="${enrollment}" class="text-danger small"/>
             </div>
 
             <div class="d-flex justify-content-between mt-4">

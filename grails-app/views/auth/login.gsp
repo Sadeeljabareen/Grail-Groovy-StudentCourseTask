@@ -4,6 +4,7 @@
     <meta name="layout" content="main"/>
     <title>Continue to Login Page</title>
 </head>
+
 <body>
 <h1>Continue to Login Page</h1>
 

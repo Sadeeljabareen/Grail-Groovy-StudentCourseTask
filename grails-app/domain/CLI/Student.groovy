@@ -16,11 +16,6 @@ class Student {
             }
         }
         photoUrl nullable: true
-       // user nullable: false, unique: true, validator: { user ->
-        //    // check if user has ROLE_USER
-        //    def roles = user?.authorities*.authority
-        //    roles && roles.contains('ROLE_USER') && !roles.contains('ROLE_ADMIN')
-       // }
     }
 
 

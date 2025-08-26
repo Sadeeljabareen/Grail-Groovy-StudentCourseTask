@@ -6,9 +6,9 @@
     <asset:stylesheet src="application.css"/>
     <asset:javascript src="application.js"/>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // التحقق من حجم الملف
-            $('input[type="file"]').change(function() {
+            $('input[type="file"]').change(function () {
                 if (this.files[0] && this.files[0].size > 2000000) {
                     alert('File size must be less than 2MB');
                     $(this).val('');
@@ -16,10 +16,10 @@
             });
 
             // التحقق من البريد الإلكتروني فورياً
-            $('#email').blur(function() {
+            $('#email').blur(function () {
                 const email = $(this).val();
                 if (email) {
-                    $.get("${createLink(controller:'student', action:'checkEmail')}", {email: email}, function(data) {
+                    $.get("${createLink(controller:'student', action:'checkEmail')}", {email: email}, function (data) {
                         if (data.exists) {
                             $('#emailError').text('Email already exists').show();
                         } else {
@@ -30,10 +30,10 @@
             });
 
             // التحقق من اسم المستخدم فورياً
-            $('#username').blur(function() {
+            $('#username').blur(function () {
                 const username = $(this).val();
                 if (username) {
-                    $.get("${createLink(controller:'student', action:'checkUsername')}", {username: username}, function(data) {
+                    $.get("${createLink(controller:'student', action:'checkUsername')}", {username: username}, function (data) {
                         if (data.exists) {
                             $('#usernameError').text('Username already exists').show();
                         } else {
@@ -45,6 +45,7 @@
         });
     </script>
 </head>
+
 <body>
 <div class="container">
     <h1>Create Student</h1>

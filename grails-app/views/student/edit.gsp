@@ -12,14 +12,15 @@
         margin-bottom: 10px;
         border-radius: 4px;
     }
+
     .photo-controls {
         margin-bottom: 15px;
     }
     </style>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // File size validation
-            $('input[type="file"]').change(function() {
+            $('input[type="file"]').change(function () {
                 if (this.files[0] && this.files[0].size > 2000000) {
                     alert('File size must be less than 2MB');
                     $(this).val('');
@@ -27,7 +28,7 @@
                     // Preview new image
                     if (this.files && this.files[0]) {
                         var reader = new FileReader();
-                        reader.onload = function(e) {
+                        reader.onload = function (e) {
                             $('#photoPreview').attr('src', e.target.result);
                         }
                         reader.readAsDataURL(this.files[0]);
@@ -36,11 +37,11 @@
             });
 
             // Email validation (exclude current email)
-            $('#email').blur(function() {
+            $('#email').blur(function () {
                 const email = $(this).val();
                 const currentEmail = '${student?.email}';
                 if (email && email !== currentEmail) {
-                    $.get("${createLink(controller:'student', action:'checkEmail')}", {email: email}, function(data) {
+                    $.get("${createLink(controller:'student', action:'checkEmail')}", {email: email}, function (data) {
                         if (data.exists) {
                             $('#emailError').text('Email already exists').show();
                         } else {
@@ -53,7 +54,7 @@
             });
 
             // Handle remove photo checkbox
-            $('#removePhoto').change(function() {
+            $('#removePhoto').change(function () {
                 if ($(this).is(':checked')) {
                     $('#photoPreview').hide();
                     $('#photoFileInput').val('');
@@ -64,6 +65,7 @@
         });
     </script>
 </head>
+
 <body>
 <div class="container">
     <h1>Edit Student</h1>
@@ -87,8 +89,8 @@
     </g:hasErrors>
 
     <g:uploadForm controller="student" action="update" id="${student?.id}" method="POST">
-        <input type="hidden" name="_method" value="PUT" />
-        <input type="hidden" name="version" value="${student?.version}" />
+        <input type="hidden" name="_method" value="PUT"/>
+        <input type="hidden" name="version" value="${student?.version}"/>
 
         <div class="form-group">
             <label for="name">Full Name*</label>
@@ -106,10 +108,13 @@
 
             <div class="photo-controls">
                 <g:if test="${student?.photoUrl}">
-                    <img id="photoPreview" src="${createLink(controller: 'student', action: 'serveImage', params: [filename: student.photoUrl])}"
+                    <img id="photoPreview"
+                         src="${createLink(controller: 'student', action: 'serveImage', params: [filename: student.photoUrl])}"
                          class="student-photo-preview"/>
+
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="removePhoto" id="removePhoto" value="true">
+                        <input class="form-check-input" type="checkbox" name="removePhoto" id="removePhoto"
+                               value="true">
                         <label class="form-check-label" for="removePhoto">
                             Remove current photo
                         </label>

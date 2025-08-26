@@ -81,7 +81,7 @@ class EnrollmentService {
     }
 
 
-     // حساب المعدل التراكمي (GPA) لطالب معيّن
+    // حساب المعدل التراكمي (GPA) لطالب معيّن
 
     Double calculateGPA(Long studentId) {
         log.info("📊 [calculateGPA] Calculating GPA for student ID: $studentId")

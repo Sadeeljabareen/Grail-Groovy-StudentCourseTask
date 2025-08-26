@@ -11,29 +11,29 @@
     <asset:stylesheet src="application.css"/>
 
     <style>
-:root {
-    --primary-color: #8a307f; /* Changed from #4CAF50 */
-    --secondary-color: #6883bc; /* Changed from #2E7D32 */
-    --light-color: #f8f9fa;
-    --dark-color: #343a40;
-    --text-color: #212529;
-    --accent-color: #79a7d3; /* New color */
-}
+    :root {
+        --primary-color: #8a307f; /* Changed from #4CAF50 */
+        --secondary-color: #6883bc; /* Changed from #2E7D32 */
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --text-color: #212529;
+        --accent-color: #79a7d3; /* New color */
+    }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: var(--text-color);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    margin: 0;
-}
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text-color);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+    }
 
-.navbar {
-    background-color: var(--primary-color) !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    padding: 0.8rem 1rem;
-}
+    .navbar {
+        background-color: var(--primary-color) !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 0.8rem 1rem;
+    }
 
     .navbar-brand {
         display: flex;
@@ -48,7 +48,7 @@ body {
     }
 
     .navbar-dark .navbar-nav .nav-link {
-        color: rgba(255,255,255,0.9);
+        color: rgba(255, 255, 255, 0.9);
         padding: 0.5rem 1rem;
         transition: all 0.3s ease;
     }
@@ -108,7 +108,7 @@ body {
     }
 
     .footer .footer-copyright {
-        border-top: 1px solid rgba(255,255,255,0.1);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
         padding-top: 20px;
         margin-top: 20px;
         text-align: center;
@@ -119,13 +119,16 @@ body {
         .navbar-brand img {
             height: 25px;
         }
+
         .footer .row {
             flex-direction: column;
         }
+
         .footer .col {
             text-align: center;
             margin-bottom: 30px;
         }
+
         .footer img {
             float: none !important;
             display: block;
@@ -133,31 +136,31 @@ body {
         }
     }
 
-.alert-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    padding: 0.75rem 1.25rem;
-    margin-bottom: 1rem;
-    border: 1px solid transparent;
-    border-radius: 0.25rem;
-}
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
 
-/* New button styles using the accent color */
-.btn-success {
-    background-color: var(--secondary-color);
-    border-color: var(--secondary-color);
-}
+    /* New button styles using the accent color */
+    .btn-success {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
 
-.btn-primary {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-}
+    .btn-primary {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
 
-.btn-outline-primary {
-    color: var(--accent-color);
-    border-color: var(--accent-color);
-}
+    .btn-outline-primary {
+        color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
     </style>
 
     <g:layoutHead/>

@@ -10,7 +10,7 @@ class EnrollmentApiService {
 
     Map enroll(Long studentId, Long courseId) {
         def student = Student.get(studentId)
-        def course  = Course.get(courseId)
+        def course = Course.get(courseId)
         if (!student || !course) {
             return [ok: false, status: 404, msg: "Student or Course not found"]
         }

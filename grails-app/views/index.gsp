@@ -22,7 +22,7 @@
         border: 1px solid #ddd;
         border-radius: 8px;
         padding: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
         background-color: #f8f9fa;
         width: 100%;
@@ -32,7 +32,7 @@
 
     .dashboard-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
     .dashboard-card h3 {

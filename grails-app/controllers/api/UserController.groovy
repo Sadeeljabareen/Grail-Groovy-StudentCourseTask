@@ -11,7 +11,7 @@ class UserController extends RestfulController<User> {
     static responseFormats = ['json']
     static allowedMethods = [
             index: 'GET', show: 'GET',
-            save: 'POST'
+            save : 'POST'
     ]
 
     UserController() { super(User) }
@@ -22,10 +22,10 @@ class UserController extends RestfulController<User> {
         def users = User.list(params)
         def items = users.collect { u ->
             [
-                    id: u.id,
-                    username: u.username,
-                    enabled: u.enabled,
-                    roles: (u.authorities*.authority) as List,
+                    id               : u.id,
+                    username         : u.username,
+                    enabled          : u.enabled,
+                    roles            : (u.authorities*.authority) as List,
                     attachedStudentId: (CLI.Student.findByUser(u)?.id)
             ]
         }
@@ -35,12 +35,14 @@ class UserController extends RestfulController<User> {
     @Override
     def show() {
         def u = User.get(params.long('id'))
-        if (!u) { render status: 404; return }
+        if (!u) {
+            render status: 404; return
+        }
         respond([
-                id: u.id,
-                username: u.username,
-                enabled: u.enabled,
-                roles: (u.authorities*.authority) as List,
+                id               : u.id,
+                username         : u.username,
+                enabled          : u.enabled,
+                roles            : (u.authorities*.authority) as List,
                 attachedStudentId: (CLI.Student.findByUser(u)?.id)
         ], [status: 200])
     }
@@ -59,7 +61,7 @@ class UserController extends RestfulController<User> {
         def user = new User(
                 username: json.username,
                 password: json.password,
-                enabled : (json.enabled instanceof Boolean ? json.enabled : true)
+                enabled: (json.enabled instanceof Boolean ? json.enabled : true)
         )
 
         if (!user.validate()) {

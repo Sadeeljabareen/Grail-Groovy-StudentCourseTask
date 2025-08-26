@@ -50,8 +50,8 @@ class EnrollmentController {
     def create() {
         render(view: "create", model: [
                 enrollment: new Enrollment(params),
-                students: Student.list(),
-                courses: Course.list()
+                students  : Student.list(),
+                courses   : Course.list()
         ])
     }
 
@@ -66,8 +66,8 @@ class EnrollmentController {
             flash.message = "you must choose student and corse"
             render(view: 'create', model: [
                     enrollment: enrollment,
-                    students: Student.list(),
-                    courses: Course.list()
+                    students  : Student.list(),
+                    courses   : Course.list()
             ])
             return
         }
@@ -80,8 +80,8 @@ class EnrollmentController {
             flash.message = e.message
             render(view: 'create', model: [
                     enrollment: enrollment,
-                    students: Student.list(),
-                    courses: Course.list()
+                    students  : Student.list(),
+                    courses   : Course.list()
             ])
         }
     }

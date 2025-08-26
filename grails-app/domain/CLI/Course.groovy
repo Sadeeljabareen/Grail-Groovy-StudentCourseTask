@@ -19,7 +19,7 @@ class Course {
         }
     }
 
-    String toString(){
+    String toString() {
         title
     }
 }

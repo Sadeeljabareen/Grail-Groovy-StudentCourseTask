@@ -8,6 +8,7 @@ import grails.gorm.transactions.Transactional
 class BookController extends RestfulController<Book> {
 
     static responseFormats = ['html', 'json']
+
     BookController() { super(Book) }
 
     BookImportService bookImportService
@@ -52,19 +53,43 @@ class BookController extends RestfulController<Book> {
         }
     }
 
-    def show() { super.show() }
+    def show() {
+        def book = Book.get(params.id)
+        if (!book) {
+            notFound()
+            return
+        }
+
+        if (request.format == 'json' || request.getHeader('Accept')?.contains('application/json')) {
+            respond book, [status: 200]
+        } else {
+            render view: 'show', model: [book: book]
+        }
+    }
 
     def create() { notAllowed() }
-    @Transactional def save() { notAllowed() }
+
+    @Transactional
+    def save() { notAllowed() }
+
     def edit() { notAllowed() }
-    @Transactional def update() { notAllowed() }
-    @Transactional def delete() { notAllowed() }
+
+    @Transactional
+    def update() { notAllowed() }
+
+    @Transactional
+    def delete() { notAllowed() }
 
     protected void notAllowed() {
         response.sendError(405, 'This operation is disabled.')
     }
 
     protected void notFound() {
-        response.sendError(404, 'Book not found.')
+        if (request.format == 'json' || request.getHeader('Accept')?.contains('application/json')) {
+            render status: 404, text: 'Book not found.'
+        } else {
+            flash.message = "Book not found"
+            redirect action: "index", method: "GET"
+        }
     }
 }

@@ -8,7 +8,7 @@ class CourseController extends RestfulController<Course> {
     static responseFormats = ['json']
     static allowedMethods = [
             index: 'GET', show: 'GET',
-            save: 'POST', update: 'PUT', delete: 'DELETE'
+            save : 'POST', update: 'PUT', delete: 'DELETE'
     ]
 
     CourseController() { super(Course) }
@@ -25,7 +25,9 @@ class CourseController extends RestfulController<Course> {
             respond([status: 415]); return
         }
         def json
-        try { json = request.JSON } catch (ignored) {
+        try {
+            json = request.JSON
+        } catch (ignored) {
             respond([status: 400]); return
         }
         if (!json) {
@@ -38,7 +40,7 @@ class CourseController extends RestfulController<Course> {
             if (!course.validate()) {
                 status.setRollbackOnly()
                 respond([
-                        message: 'Validation failed',
+                        message    : 'Validation failed',
                         fieldErrors: course.errors.fieldErrors.collect { fe ->
                             [field: fe.field, rejectedValue: fe.rejectedValue, code: fe.code, message: fe.defaultMessage]
                         }
@@ -57,10 +59,14 @@ class CourseController extends RestfulController<Course> {
         }
         def id = params.long('id')
         def course = Course.get(id)
-        if (!course) { render status: 404; return }
+        if (!course) {
+            render status: 404; return
+        }
 
         def json
-        try { json = request.JSON } catch (ignored) {
+        try {
+            json = request.JSON
+        } catch (ignored) {
             respond([status: 400]); return
         }
 
@@ -69,7 +75,7 @@ class CourseController extends RestfulController<Course> {
             if (!course.validate()) {
                 status.setRollbackOnly()
                 respond([
-                        message: 'Validation failed',
+                        message    : 'Validation failed',
                         fieldErrors: course.errors.fieldErrors.collect { fe ->
                             [field: fe.field, rejectedValue: fe.rejectedValue, code: fe.code, message: fe.defaultMessage]
                         }
@@ -84,7 +90,9 @@ class CourseController extends RestfulController<Course> {
     def delete() {
         def id = params.long('id')
         def course = Course.get(id)
-        if (!course) { render status: 404; return }
+        if (!course) {
+            render status: 404; return
+        }
         Course.withTransaction {
             course.delete()
         }

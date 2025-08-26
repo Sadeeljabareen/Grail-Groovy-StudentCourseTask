@@ -12,7 +12,7 @@ class Book {
     String thumbnailUrl
     String previewLink
 
-    String  publishedDateRaw
+    String publishedDateRaw
     Integer pageCount
 
     Date dateCreated
@@ -20,25 +20,25 @@ class Book {
 
     static constraints = {
         googleId blank: false, unique: true
-        title    blank: false
+        title blank: false
 
-        authors         nullable: true
-        description     nullable: true, maxSize: 10000
-        categories      nullable: true
+        authors nullable: true
+        description nullable: true, maxSize: 10000
+        categories nullable: true
 
-        thumbnailUrl    nullable: true
-        previewLink     nullable: true
+        thumbnailUrl nullable: true
+        previewLink nullable: true
 
         publishedDateRaw nullable: true
-        pageCount        nullable: true, min: 0
+        pageCount nullable: true, min: 0
     }
 
     static mapping = {
-        description   type: 'text'
-        categories    type: 'text'
-        authors       type: 'text'
-        thumbnailUrl  type: 'text'
-        previewLink   type: 'text'
+        description type: 'text'
+        categories type: 'text'
+        authors type: 'text'
+        thumbnailUrl type: 'text'
+        previewLink type: 'text'
     }
 
     String toString() {

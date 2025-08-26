@@ -10,7 +10,7 @@ import grails.core.GrailsApplication
 class StudentController {
 
     static allowedMethods = [
-            save: "POST",
+            save  : "POST",
             update: ["PUT", "POST"],
             delete: "DELETE"
     ]
@@ -56,7 +56,7 @@ class StudentController {
         }
 
         render(view: "index", model: [
-                studentList: studentList,
+                studentList : studentList,
                 studentCount: studentList.totalCount
         ])
     }
@@ -64,7 +64,7 @@ class StudentController {
     def create() {
         render(view: "create", model: [
                 student: new Student(),
-                user: new User()
+                user   : new User()
         ])
     }
 
@@ -144,15 +144,15 @@ class StudentController {
             def user = ve.target instanceof User ? ve.target : new User(params)
             render(view: "create", model: [
                     student: student,
-                    user: user,
-                    error: ve.message
+                    user   : user,
+                    error  : ve.message
             ])
         } catch (Exception e) {
             log.error("Error saving student data", e)
             render(view: "create", model: [
                     student: new Student(params),
-                    user: new User(params),
-                    error: e.message
+                    user   : new User(params),
+                    error  : e.message
             ])
         }
     }
@@ -193,7 +193,7 @@ class StudentController {
         }
 
         if (student.hasErrors()) {
-            respond student.errors, view:'edit'
+            respond student.errors, view: 'edit'
             return
         }
 

@@ -33,7 +33,9 @@ class StudentController extends RestfulController<Student> {
         }
 
         def json = request.JSON
-        if (!json) { respond([message: 'Empty body'], [status: 400]); return }
+        if (!json) {
+            respond([message: 'Empty body'], [status: 400]); return
+        }
 
         if (!json.name || !json.email) {
             respond([message: 'name and email are required'], [status: 422]); return
@@ -60,8 +62,8 @@ class StudentController extends RestfulController<Student> {
                         password: json.password
                 )
                 if (user.metaClass.hasProperty(user, 'enabled') && user.enabled == null) user.enabled = true
-                if (user.metaClass.hasProperty(user, 'accountExpired'))  user.accountExpired  = false
-                if (user.metaClass.hasProperty(user, 'accountLocked'))   user.accountLocked   = false
+                if (user.metaClass.hasProperty(user, 'accountExpired')) user.accountExpired = false
+                if (user.metaClass.hasProperty(user, 'accountLocked')) user.accountLocked = false
                 if (user.metaClass.hasProperty(user, 'passwordExpired')) user.passwordExpired = false
 
                 if (!user.validate()) {
@@ -77,10 +79,10 @@ class StudentController extends RestfulController<Student> {
                 }
 
                 def student = new Student(
-                        name    : json.name,
-                        email   : json.email,
+                        name: json.name,
+                        email: json.email,
                         photoUrl: (json.photoUrl ?: null),
-                        user    : user
+                        user: user
                 )
 
                 if (!student.validate()) {
@@ -109,7 +111,9 @@ class StudentController extends RestfulController<Student> {
 
         def id = params.long('id')
         def student = Student.get(id)
-        if (!student) { render status: 404; return }
+        if (!student) {
+            render status: 404; return
+        }
 
         def json
         try {
@@ -158,7 +162,9 @@ class StudentController extends RestfulController<Student> {
     def delete() {
         def id = params.long('id')
         def student = Student.get(id)
-        if (!student) { render status: 404; return }
+        if (!student) {
+            render status: 404; return
+        }
 
         Student.withTransaction { student.delete() }
         render status: 204

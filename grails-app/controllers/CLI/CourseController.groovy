@@ -26,7 +26,7 @@ class CourseController {
         }
 
         render(view: "index", model: [
-                courseList: courseList,
+                courseList : courseList,
                 courseCount: courseList.totalCount
         ])
     }
@@ -116,9 +116,6 @@ class CourseController {
         ])
         redirect(action: "index")
     }
-
-
-
 
 
 }
